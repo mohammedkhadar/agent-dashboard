@@ -68,7 +68,7 @@ Returns the aggregate usage summary for the organization within a date range.
     "totalSessions": 4230,
     "totalComputeHours": 1285.50,
     "totalTokens": 89420150,
-    "activeUserCount": 42
+    "activeUserCount": 28
   }
 }
 ```
@@ -79,7 +79,7 @@ Returns the aggregate usage summary for the organization within a date range.
 
 ### GET /api/usage/trends
 
-Returns time-series usage data aggregated by the specified granularity.
+Returns time-series usage data for the selected date range.
 
 **Query Parameters**:
 
@@ -87,13 +87,11 @@ Returns time-series usage data aggregated by the specified granularity.
 |-------|------|----------|-------------|
 | startDate | ISO 8601 date | Yes | Start of date range |
 | endDate | ISO 8601 date | Yes | End of date range |
-| granularity | enum | Yes | `daily` \| `weekly` \| `monthly` |
 
 **Response** `200 OK`:
 ```json
 {
   "data": {
-    "granularity": "daily",
     "points": [
       {
         "date": "2026-03-01",
@@ -114,8 +112,7 @@ Returns time-series usage data aggregated by the specified granularity.
 
 **Notes**:
 - Zero-filled: dates with no data return zero values (not omitted).
-- Weekly granularity: `date` is the ISO week start (Monday).
-- Monthly granularity: `date` is the first of the month.
+- Data is returned at daily granularity; each `date` is a calendar day.
 
 **Maps to**: FR-002, FR-003, User Story 2
 
@@ -132,7 +129,7 @@ Returns per-member usage breakdown with pagination and sorting.
 | startDate | ISO 8601 date | Yes | — | Start of date range |
 | endDate | ISO 8601 date | Yes | — | End of date range |
 | page | integer | No | 1 | Page number (1-indexed) |
-| pageSize | integer | No | 25 | Items per page (max 100) |
+| pageSize | integer | No | 10 | Items per page (max 100) |
 | sortBy | enum | No | `sessions` | `memberName` \| `sessions` \| `computeHours` \| `totalTokens` \| `successRate` \| `lastActiveAt` |
 | sortOrder | enum | No | `desc` | `asc` \| `desc` |
 

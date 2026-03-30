@@ -5,7 +5,7 @@
 
 ## Summary
 
-Build a customer-facing organizational-level analytics dashboard that displays agent usage metrics (sessions, compute hours, tokens, outcomes) across an organization. The dashboard is a read-only web application consuming data from an existing internal API. It covers four core views: usage overview (P1), usage trends with time-series charts (P2), per-member usage breakdown (P3), and session outcome monitoring (P4). The frontend is a single-page application with mock API layer for initial development.
+Build a customer-facing organizational-level analytics dashboard that displays agent usage metrics (sessions, compute hours, tokens, outcomes) across an organization. The dashboard is a read-only web application consuming data from an existing internal API. It covers three routed views sharing a common navigation shell: usage overview (with trend charts) at `/` (P1+P2), per-member breakdown at `/members` (P3), and session outcome monitoring at `/outcomes` (P4). The frontend uses Next.js App Router with a mock API layer for initial development.
 
 ## Technical Context
 
@@ -52,9 +52,9 @@ specs/001-org-analytics-dashboard/
 src/
 ├── app/                     # Next.js App Router pages
 │   ├── layout.tsx           # Root layout with providers
-│   ├── page.tsx             # Dashboard home (overview)
-│   ├── trends/
-│   │   └── page.tsx         # Usage trends view
+│   ├── page.tsx             # Dashboard home (overview + trends)
+│   ├── login/
+│   │   └── page.tsx         # Mock login page (email/password auth)
 │   ├── members/
 │   │   └── page.tsx         # Member breakdown view
 │   └── outcomes/
@@ -68,14 +68,13 @@ src/
 │   │   ├── outcome-chart.tsx
 │   │   ├── error-category-list.tsx
 │   │   ├── date-range-picker.tsx
-│   │   ├── granularity-toggle.tsx
 │   │   └── trend-tooltip.tsx
 │   └── shared/              # Cross-cutting components
 │       ├── skeleton-card.tsx
 │       ├── error-banner.tsx
 │       ├── empty-state.tsx
 │       ├── nav-tabs.tsx
-│       └── timezone-indicator.tsx
+│       └── *(timezone-indicator.tsx and inline timezone label both deferred to v2)*
 ├── hooks/                   # Custom React hooks
 │   ├── use-usage-summary.ts
 │   ├── use-usage-trends.ts

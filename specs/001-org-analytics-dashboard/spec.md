@@ -9,7 +9,7 @@
 
 ### User Story 1 - View Organization Usage Overview (Priority: P1)
 
-An engineering manager opens the analytics dashboard and immediately sees a high-level summary of their organization's agent usage for the current billing period. The overview displays total agent sessions run, total compute hours consumed, number of active users, and total tokens consumed. The manager can quickly assess whether the team's usage is healthy or approaching limits without drilling into any details.
+An engineering manager opens the analytics dashboard and immediately sees a high-level summary of their organization's agent usage for the current billing period. The overview displays total agent sessions run, total compute hours consumed, number of active users, and total tokens. The manager can quickly assess whether the team's usage is healthy or approaching limits without drilling into any details.
 
 **Why this priority**: This is the core value proposition — giving organizational leaders instant visibility into agent consumption. Without the overview, no other dashboard feature has context.
 
@@ -17,7 +17,7 @@ An engineering manager opens the analytics dashboard and immediately sees a high
 
 **Acceptance Scenarios**:
 
-1. **Given** a logged-in user with org admin, manager, or billing role, **When** they navigate to the dashboard home, **Then** they see summary cards showing total sessions, total compute hours, active users count, and total token count.
+1. **Given** a logged-in user with org admin, manager, or billing role, **When** they navigate to the dashboard home, **Then** they see summary cards showing total sessions, total compute hours, active users count, and total tokens.
 2. **Given** the current billing period has no usage data, **When** the dashboard loads, **Then** the summary cards display zeros with a friendly empty-state message encouraging the team to run their first agent session.
 3. **Given** usage data is loading, **When** the dashboard is opened, **Then** skeleton placeholders are shown for each card until data arrives.
 4. **Given** the data service is temporarily unavailable, **When** the dashboard loads, **Then** an error banner is displayed with a retry option, and the last-known cached values are shown (if available) with a staleness indicator.
@@ -26,18 +26,17 @@ An engineering manager opens the analytics dashboard and immediately sees a high
 
 ### User Story 2 - Analyze Usage Trends Over Time (Priority: P2)
 
-An engineering manager wants to understand how the organization's agent usage has changed over the past weeks and months. They select a date range and see time-series charts for sessions per day, compute hours per day, and tokens per day. They can toggle between daily, weekly, and monthly granularity to spot trends, detect spikes, and forecast future consumption.
+An engineering manager wants to understand how the organization's agent usage has changed over the past weeks and months. They select a date range and see time-series charts for sessions per day, compute hours per day, and tokens per day to spot trends, detect spikes, and forecast future consumption.
 
 **Why this priority**: Trend analysis enables proactive capacity planning and budget management. It builds directly on the overview data and turns a snapshot into actionable insight.
 
-**Independent Test**: Can be tested by rendering charts with sample time-series data across multiple date ranges and verifying correct aggregation at each granularity level.
+**Independent Test**: Can be tested by rendering charts with sample time-series data across multiple date ranges and verifying correct rendering of daily data points.
 
 **Acceptance Scenarios**:
 
-1. **Given** a user viewing the dashboard, **When** they select "Last 30 days" and daily granularity, **Then** they see a line chart with one data point per day for sessions, compute hours, and tokens.
-2. **Given** a user switches granularity to "Weekly", **When** the chart updates, **Then** data points are aggregated into ISO weeks and the x-axis labels reflect week boundaries.
-3. **Given** the selected date range contains no data for some days, **When** the chart renders, **Then** those days show zero values (not gaps) to maintain a continuous timeline.
-4. **Given** a user hovers over a data point, **When** the tooltip appears, **Then** it shows the exact value, date, and percentage change from the previous period.
+1. **Given** a user viewing the dashboard, **When** they select "Last 30 days", **Then** they see a line chart with one data point per day for sessions, compute hours, and tokens.
+2. **Given** the selected date range contains no data for some days, **When** the chart renders, **Then** those days show zero values (not gaps) to maintain a continuous timeline.
+3. **Given** a user hovers over a data point, **When** the tooltip appears, **Then** it shows the exact value, date, and percentage change from the previous period.
 
 ---
 
@@ -53,7 +52,7 @@ An engineering manager wants to see which team members are the heaviest agent us
 
 1. **Given** an organization with 15 members, **When** the manager views the members table, **Then** all 15 members are listed with columns for name, sessions, compute hours, total tokens, success rate, and last active date, sorted by sessions descending by default.
 2. **Given** the manager clicks the "Compute Hours" column header, **When** the table re-sorts, **Then** members are ordered by compute hours descending, and a second click reverses to ascending.
-3. **Given** an organization with more than 25 members, **When** the table loads, **Then** pagination controls appear showing 25 members per page.
+3. **Given** an organization with more than 10 members, **When** the table loads, **Then** pagination controls appear showing 10 members per page.
 4. **Given** a member has zero sessions in the selected period, **When** their row renders, **Then** all metric columns show "0" and last active shows "No activity".
 
 ---
@@ -74,6 +73,24 @@ An engineer or manager wants to understand the quality of agent sessions — how
 
 ---
 
+### User Story 5 - Sign In and Sign Out (Priority: P1)
+
+A user navigates to the dashboard and is prompted to log in with their email and password. After successful authentication, the dashboard displays their name and role in the header. When they click logout, the session is cleared and they are redirected to the login page. Attempting to access any dashboard page without authentication redirects to login.
+
+**Why this priority**: Authentication is a prerequisite for all dashboard functionality. Without login/logout, users cannot access the dashboard or securely end their session.
+
+**Independent Test**: Navigate to `/login`, enter valid credentials, verify redirect to dashboard with user identity displayed. Click logout, verify redirect to `/login` and inability to access dashboard without re-authenticating.
+
+**Acceptance Scenarios**:
+
+1. **Given** a user with valid credentials, **When** they submit the login form, **Then** they are redirected to the dashboard and their name and role are displayed in the header.
+2. **Given** a user enters invalid credentials, **When** they submit the login form, **Then** an error message is displayed and no redirect occurs.
+3. **Given** a logged-in user, **When** they click the logout button, **Then** their session is cleared, all cached data is invalidated, and they are redirected to `/login`.
+4. **Given** an unauthenticated user, **When** they navigate to any dashboard page, **Then** they are redirected to `/login`.
+5. **Given** a user who has just logged out, **When** they navigate back to `/`, **Then** they are redirected to `/login` again.
+
+---
+
 ### Edge Cases
 
 - What happens when an organization has only one member? Dashboard must still render all views correctly without "compare to team" language.
@@ -81,49 +98,52 @@ An engineer or manager wants to understand the quality of agent sessions — how
 - What happens when the billing period changes (e.g., monthly to quarterly)? The dashboard defaults to the current billing period and allows manual date range selection as an override.
 - How does the dashboard handle extremely large organizations (500+ members)? The member table must support server-side pagination; charts must virtualize or aggregate data points to maintain rendering performance.
 - What happens when the user's session token expires while viewing the dashboard? **Deferred to v2.** In v1, the existing auth system's redirect handles expiry. V2 will add an inline re-authentication prompt without losing the current view state.
-- How does the system handle time zone differences? All timestamps are displayed in the organization's configured time zone with an indicator visible to the user.
+- How does the system handle time zone differences? All timestamps are displayed in the organization's configured time zone.
 
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
 
-- **FR-001**: System MUST display a summary overview with total sessions, total compute hours, active user count, and total token count when a user loads the dashboard.
-- **FR-002**: System MUST allow users to select a date range (predefined presets: today, last 7 days, last 30 days, last 90 days, custom range) and filter all dashboard data accordingly.
-- **FR-003**: System MUST render time-series charts (sessions, compute hours, tokens) with configurable granularity (daily, weekly, monthly).
-- **FR-004**: System MUST display a sortable, paginated table of organization members with per-member usage metrics (sessions, compute hours, total tokens, success rate, last active).
+- **FR-001**: System MUST display a summary overview with total sessions, total compute hours, active user count, and total tokens when a user loads the dashboard.
+- **FR-002**: System MUST allow users to select a date range (predefined presets: last 7 days, last 30 days, last 90 days) and filter all dashboard data accordingly.
+- **FR-003**: System MUST render time-series charts (sessions, compute hours, tokens) for the selected date range.
+- **FR-004**: System MUST display a sortable, paginated table of organization members with per-member usage metrics (sessions, compute hours, total tokens, success rate, last active). See FR-014 for pagination specifics.
 - **FR-005**: System MUST display session outcome distribution (success, error, timeout, cancelled) as a proportional chart with counts and percentages.
 - **FR-006**: System MUST display the top error categories ranked by frequency when error sessions exist.
 - **FR-007**: System MUST enforce role-based access: only users with org admin, billing, or manager roles can view the dashboard.
 - **FR-008**: System MUST display appropriate empty states for all views when no data exists for the selected period.
 - **FR-009**: System MUST display loading states (skeleton screens) for all data-driven components while data is being fetched.
 - **FR-010**: System MUST display an error state with retry option when data retrieval fails, showing cached data with a staleness indicator when available.
-- **FR-011**: System MUST display all timestamps in the organization's configured time zone.
-- **FR-012**: System MUST preserve the user's selected date range and granularity preferences within a browser session.
+- **FR-011**: System MUST format all displayed timestamps using the organization's configured time zone (IANA timezone from org profile). A visible timezone label is deferred to v2.
+- **FR-012**: System MUST preserve the user's selected date range preferences within a browser session.
 - **FR-013**: System MUST show a tooltip with exact values and period-over-period change when a user hovers over chart data points.
-- **FR-014**: System MUST paginate the member table at 25 rows per page with navigation controls.
+- **FR-014**: System MUST paginate the member table at 10 rows per page with navigation controls.
+- **FR-015**: System MUST provide visual feedback (hover, press, focus states) within 100 ms of user interaction on all interactive elements.
+- **FR-016**: System MUST provide a logout mechanism that clears the user's session, invalidates cached data, and redirects to the login page. The logged-in user's name and role MUST be visible in the dashboard header.
+- **FR-017**: System MUST provide a login page with email and password fields that authenticates against the auth API, stores session state in sessionStorage on success, and displays an error message on failure.
 
 ### Key Entities
 
 - **Organization**: The top-level customer account; has a name, billing period configuration, time zone, and one or more members. Aggregates all usage data.
 - **Member**: A user belonging to an organization; has a name, email, role (admin, manager, member, billing), join date, and status (active, removed). Tied to their individual agent sessions.
 - **Agent Session**: A single execution of a cloud agent by a member; has a start time, end time, compute duration, outcome (success, error, timeout, cancelled), error category (if applicable), and token count (input tokens + output tokens).
-- **Usage Summary**: A computed aggregate over a time period for an organization; includes total sessions, total compute hours, active user count, and total token count. Derived from agent sessions.
+- **Usage Summary**: A computed aggregate over a time period for an organization; includes total sessions, total compute hours, active user count, and total tokens. Derived from agent sessions.
 
 ## Success Criteria *(mandatory)*
 
 ### Measurable Outcomes
 
-- **SC-001**: Users can assess their organization's current agent usage status within 5 seconds of opening the dashboard.
+- **SC-001**: Users can assess their organization's current agent usage status within 5 seconds of opening the dashboard. *(CI-validated by T058 LCP < 2s + T059 API p95 < 500ms.)*
 - **SC-002**: Users can identify the highest-token-consuming team member within 3 interactions (page load + at most 2 clicks/sorts).
-- **SC-003**: The dashboard supports organizations with up to 500 members and 100,000 sessions per billing period without visible performance degradation.
-- **SC-004**: 90% of users can complete their primary task (check usage, find a trend, review outcomes) on their first visit without consulting help documentation.
+- **SC-003**: The dashboard supports organizations with up to 500 members and 100,000 sessions per billing period while maintaining 60 fps rendering and LCP < 2 s per Constitution Principle IV.
+- **SC-004**: 90% of users can complete their primary task (check usage, find a trend, review outcomes) on their first visit without consulting help documentation. *(Post-launch usability metric — not a CI gate.)*
 - **SC-005**: All dashboard views render correctly on viewports 1024px and wider.
 - **SC-006**: The dashboard maintains a consistent visual language — all charts, tables, cards, and controls follow a single design system with no style deviations.
 
 ## Assumptions
 
 - Users access the dashboard via a modern desktop web browser (Chrome, Firefox, Safari, Edge — latest two major versions). Mobile/responsive below 1024px is out of scope for v1.
-- An existing authentication and authorization system handles user login and role assignment; the dashboard consumes session tokens and role claims from this system.
+- An existing authentication and authorization system handles user login and role assignment; the dashboard consumes session tokens and role claims from this system. For development, a mock login page (`/login`) with a `POST /api/auth/login` MSW handler provides email/password authentication with 4 demo accounts, storing auth state in sessionStorage.
 - Agent session data (start, end, outcome, token counts) is already collected and available via an internal data service or API; the dashboard is a read-only consumer of this data.
 - Token counts include both input and output tokens per session; the platform provides these as integer values.
 - The organization's billing period is calendar-monthly by default; custom billing cycles are not supported in v1.

@@ -81,7 +81,8 @@ time-to-insight during incidents.
 ### IV. Performance Requirements
 
 - Initial page load (Largest Contentful Paint) MUST complete
-  within 2 seconds on a standard broadband connection.
+  within 2 seconds on a standard broadband connection
+  (Lighthouse desktop preset).
 - Client-side JavaScript bundle size MUST NOT exceed 250 KB
   gzipped for the initial route.
 - API responses powering dashboard views MUST return within
