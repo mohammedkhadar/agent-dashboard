@@ -68,27 +68,32 @@ src/
 │   │   ├── outcome-chart.tsx
 │   │   ├── error-category-list.tsx
 │   │   ├── date-range-picker.tsx
-│   │   └── granularity-toggle.tsx
+│   │   ├── granularity-toggle.tsx
+│   │   └── trend-tooltip.tsx
 │   └── shared/              # Cross-cutting components
 │       ├── skeleton-card.tsx
 │       ├── error-banner.tsx
 │       ├── empty-state.tsx
-│       └── nav-tabs.tsx
+│       ├── nav-tabs.tsx
+│       └── timezone-indicator.tsx
 ├── hooks/                   # Custom React hooks
 │   ├── use-usage-summary.ts
 │   ├── use-usage-trends.ts
 │   ├── use-member-usage.ts
 │   ├── use-session-outcomes.ts
+│   ├── use-org-profile.ts
 │   └── use-date-range.ts
 ├── lib/                     # Utilities and API client
 │   ├── api-client.ts        # Typed fetch wrapper for data service
 │   ├── formatters.ts        # Number, date, token formatting
+│   ├── schemas.ts           # Zod validation schemas for API responses
 │   ├── types.ts             # Shared TypeScript interfaces
 │   └── constants.ts         # Date presets, pagination defaults
 ├── mocks/                   # Mock data layer for development
 │   ├── handlers.ts          # MSW request handlers
 │   ├── fixtures/            # Static fixture data
-│   └── server.ts            # MSW server setup
+│   ├── server.ts            # MSW server setup
+│   └── browser.ts           # MSW browser setup
 └── styles/
     └── globals.css          # Tailwind base + design tokens
 

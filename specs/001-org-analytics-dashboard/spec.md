@@ -9,7 +9,7 @@
 
 ### User Story 1 - View Organization Usage Overview (Priority: P1)
 
-An engineering manager opens the analytics dashboard and immediately sees a high-level summary of their organization's agent usage for the current billing period. The overview displays total agent sessions run, total compute time consumed, number of active users, and total tokens consumed. The manager can quickly assess whether the team's usage is healthy or approaching limits without drilling into any details.
+An engineering manager opens the analytics dashboard and immediately sees a high-level summary of their organization's agent usage for the current billing period. The overview displays total agent sessions run, total compute hours consumed, number of active users, and total tokens consumed. The manager can quickly assess whether the team's usage is healthy or approaching limits without drilling into any details.
 
 **Why this priority**: This is the core value proposition — giving organizational leaders instant visibility into agent consumption. Without the overview, no other dashboard feature has context.
 
@@ -17,7 +17,7 @@ An engineering manager opens the analytics dashboard and immediately sees a high
 
 **Acceptance Scenarios**:
 
-1. **Given** a logged-in user with org admin or billing role, **When** they navigate to the dashboard home, **Then** they see summary cards showing total sessions, total compute hours, active users count, and total token count.
+1. **Given** a logged-in user with org admin, manager, or billing role, **When** they navigate to the dashboard home, **Then** they see summary cards showing total sessions, total compute hours, active users count, and total token count.
 2. **Given** the current billing period has no usage data, **When** the dashboard loads, **Then** the summary cards display zeros with a friendly empty-state message encouraging the team to run their first agent session.
 3. **Given** usage data is loading, **When** the dashboard is opened, **Then** skeleton placeholders are shown for each card until data arrives.
 4. **Given** the data service is temporarily unavailable, **When** the dashboard loads, **Then** an error banner is displayed with a retry option, and the last-known cached values are shown (if available) with a staleness indicator.
@@ -43,7 +43,7 @@ An engineering manager wants to understand how the organization's agent usage ha
 
 ### User Story 3 - Break Down Usage by Team Member (Priority: P3)
 
-An engineering manager wants to see which team members are the heaviest agent users to understand adoption patterns, identify power users, and support underutilizers. They view a table of all organization members ranked by usage, showing each member's session count, compute hours, success rate, and last active timestamp.
+An engineering manager wants to see which team members are the heaviest agent users to understand adoption patterns, identify power users, and support underutilizers. They view a table of all organization members ranked by usage, showing each member's session count, compute hours, total tokens, success rate, and last active timestamp.
 
 **Why this priority**: Per-member breakdown helps managers drive adoption, re-distribute licenses, and identify training needs. It provides the "who" context behind the aggregate numbers.
 
@@ -51,7 +51,7 @@ An engineering manager wants to see which team members are the heaviest agent us
 
 **Acceptance Scenarios**:
 
-1. **Given** an organization with 15 members, **When** the manager views the members table, **Then** all 15 members are listed with columns for name, sessions, compute hours, success rate, and last active date, sorted by sessions descending by default.
+1. **Given** an organization with 15 members, **When** the manager views the members table, **Then** all 15 members are listed with columns for name, sessions, compute hours, total tokens, success rate, and last active date, sorted by sessions descending by default.
 2. **Given** the manager clicks the "Compute Hours" column header, **When** the table re-sorts, **Then** members are ordered by compute hours descending, and a second click reverses to ascending.
 3. **Given** an organization with more than 25 members, **When** the table loads, **Then** pagination controls appear showing 25 members per page.
 4. **Given** a member has zero sessions in the selected period, **When** their row renders, **Then** all metric columns show "0" and last active shows "No activity".
@@ -80,7 +80,7 @@ An engineer or manager wants to understand the quality of agent sessions — how
 - How does the system handle a member being removed from the organization mid-billing-period? Their historical usage remains in aggregates and the member table with a "Removed" badge; they do not count toward active users.
 - What happens when the billing period changes (e.g., monthly to quarterly)? The dashboard defaults to the current billing period and allows manual date range selection as an override.
 - How does the dashboard handle extremely large organizations (500+ members)? The member table must support server-side pagination; charts must virtualize or aggregate data points to maintain rendering performance.
-- What happens when the user's session token expires while viewing the dashboard? The system shows an inline re-authentication prompt without losing the current view state.
+- What happens when the user's session token expires while viewing the dashboard? **Deferred to v2.** In v1, the existing auth system's redirect handles expiry. V2 will add an inline re-authentication prompt without losing the current view state.
 - How does the system handle time zone differences? All timestamps are displayed in the organization's configured time zone with an indicator visible to the user.
 
 ## Requirements *(mandatory)*
@@ -90,7 +90,7 @@ An engineer or manager wants to understand the quality of agent sessions — how
 - **FR-001**: System MUST display a summary overview with total sessions, total compute hours, active user count, and total token count when a user loads the dashboard.
 - **FR-002**: System MUST allow users to select a date range (predefined presets: today, last 7 days, last 30 days, last 90 days, custom range) and filter all dashboard data accordingly.
 - **FR-003**: System MUST render time-series charts (sessions, compute hours, tokens) with configurable granularity (daily, weekly, monthly).
-- **FR-004**: System MUST display a sortable, paginated table of organization members with per-member usage metrics (sessions, compute hours, success rate, last active).
+- **FR-004**: System MUST display a sortable, paginated table of organization members with per-member usage metrics (sessions, compute hours, total tokens, success rate, last active).
 - **FR-005**: System MUST display session outcome distribution (success, error, timeout, cancelled) as a proportional chart with counts and percentages.
 - **FR-006**: System MUST display the top error categories ranked by frequency when error sessions exist.
 - **FR-007**: System MUST enforce role-based access: only users with org admin, billing, or manager roles can view the dashboard.
@@ -128,3 +128,4 @@ An engineer or manager wants to understand the quality of agent sessions — how
 - Token counts include both input and output tokens per session; the platform provides these as integer values.
 - The organization's billing period is calendar-monthly by default; custom billing cycles are not supported in v1.
 - Real-time streaming of live session data is out of scope; the dashboard displays data with up to a 5-minute delay.
+- Handling of expired session tokens (re-authentication prompt) is deferred to v2; v1 relies on the existing auth system's redirect behavior.

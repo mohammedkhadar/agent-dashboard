@@ -133,7 +133,7 @@ Returns per-member usage breakdown with pagination and sorting.
 | endDate | ISO 8601 date | Yes | — | End of date range |
 | page | integer | No | 1 | Page number (1-indexed) |
 | pageSize | integer | No | 25 | Items per page (max 100) |
-| sortBy | enum | No | `sessions` | `sessions` \| `computeHours` \| `totalTokens` \| `successRate` \| `lastActiveAt` |
+| sortBy | enum | No | `sessions` | `memberName` \| `sessions` \| `computeHours` \| `totalTokens` \| `successRate` \| `lastActiveAt` |
 | sortOrder | enum | No | `desc` | `asc` \| `desc` |
 
 **Response** `200 OK`:
@@ -167,7 +167,7 @@ Returns per-member usage breakdown with pagination and sorting.
 - Removed members are included with `memberStatus: "removed"`.
 - Members with zero sessions show `successRate: 0` and `lastActiveAt: null`.
 
-**Maps to**: FR-004, FR-014, FR-015, User Story 3
+**Maps to**: FR-004, FR-014, User Story 3
 
 ---
 
