@@ -82,3 +82,8 @@ NEXT_PUBLIC_API_BASE_URL=https://api.example.com
 ```
 
 See `src/lib/api-client.ts` for the full API contract and `specs/001-org-analytics-dashboard/contracts/` for endpoint schemas.
+
+## Next steps
+- Localisation
+- Setup and trigger alerts
+- Team level views
