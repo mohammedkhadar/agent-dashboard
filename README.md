@@ -87,3 +87,4 @@ See `src/lib/api-client.ts` for the full API contract and `specs/001-org-analyti
 - Localisation
 - Setup and trigger alerts
 - Team level views
+- Figma MCP setup
