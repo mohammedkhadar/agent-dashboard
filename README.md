@@ -88,3 +88,4 @@ See `src/lib/api-client.ts` for the full API contract and `specs/001-org-analyti
 - Setup and trigger alerts
 - Team level views
 - Figma MCP setup
+- Task type agent runs overview
